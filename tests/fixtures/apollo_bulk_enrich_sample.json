@@ -1,0 +1,40 @@
+{
+ "organizations": [
+  {
+   "name": "n8n",
+   "primary_domain": "n8n.io",
+   "website_url": "http://www.n8n.io",
+   "industry": "information technology & services",
+   "industries": [
+    "information technology & services",
+    "computer software"
+   ],
+   "estimated_num_employees": 150,
+   "country": "Germany"
+  },
+  {
+   "name": "Pitch",
+   "primary_domain": "pitch.com",
+   "website_url": "http://www.pitch.com",
+   "industry": "online media",
+   "industries": [
+    "online media",
+    "computer software"
+   ],
+   "estimated_num_employees": 77,
+   "country": "Germany"
+  },
+  {
+   "name": "PostHog",
+   "primary_domain": "posthog.com",
+   "website_url": "http://www.posthog.com",
+   "industry": "information technology & services",
+   "industries": [
+    "information technology & services",
+    "computer software"
+   ],
+   "estimated_num_employees": 240,
+   "country": "United States"
+  }
+ ]
+}

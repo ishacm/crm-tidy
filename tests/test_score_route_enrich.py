@@ -94,3 +94,30 @@ def test_industry_match_is_whole_word():
     assert score._in("Computer & Network Security", ["security"])
     assert not score._in("it", ["security"]) and not score._in("retail", ["e-commerce"])
     assert score._in("E-Commerce", ["e-commerce"])
+
+
+def test_real_apollo_response_shape_scores_software_companies_correctly(monkeypatch):
+    """Shape taken from a real bulk_enrich response (Nov 2026), trimmed to the fields we read.
+    Apollo's primary `industry` is broad, so scoring must also look at the `industries` list."""
+    sample = json.load(open("tests/fixtures/apollo_bulk_enrich_sample.json"))
+
+    class Real:
+        def post(self, url, json=None, headers=None, timeout=None):
+            class R:
+                status_code = 200
+                def json(s): return sample
+            return R()
+
+    monkeypatch.setenv("APOLLO_API_KEY", "test-not-a-real-key")
+    comps = {d: {"domain": d, "industry": "", "employees_n": None, "country": "", "sources": {}}
+             for d in ("n8n.io", "pitch.com", "posthog.com")}
+    enrich.apollo(comps, http=Real())
+    assert comps["pitch.com"]["industry"] == "online media" and "computer software" in comps["pitch.com"]["industry_all"]
+    assert comps["posthog.com"]["country"] == "US" and comps["n8n.io"]["employees_n"] == 150
+    icp = {"industries": ["software"], "employees": {"min": 20, "max": 500}, "geos": [], "personas": ["finance"],
+           "seniority": ["c_level"]}
+    recs = [rec(title="CFO", email=f"cfo@{d}") for d in comps]
+    enrich.apply(recs, comps)
+    for r in recs:
+        s = score.score(r, icp)
+        assert any(x.startswith("+30 industry fits") for x in s["reasons"]), (r["domain"], s["reasons"])

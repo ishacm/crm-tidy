@@ -105,6 +105,11 @@ def apollo(comps: dict, http=None) -> dict:
             o = by.get(c["domain"])
             if not o:
                 continue
+            # Apollo's primary `industry` is broad ("information technology & services" for most software firms);
+            # the `industries` list carries the useful labels ("computer software"), so keep all of them for scoring.
+            tags = [x.lower() for x in (o.get("industries") or [o.get("industry")]) if x]
+            if tags and not c.get("industry_all"):
+                c["industry_all"] = ", ".join(dict.fromkeys(tags))
             stats["filled"] += sum([_fill(c, "industry", (o.get("industry") or "").lower(), "apollo"),
                                     _fill(c, "employees_n", o.get("estimated_num_employees"), "apollo"),
                                     _fill(c, "country", _iso(o.get("country")), "apollo")])
@@ -185,3 +190,5 @@ def apply(records: list[dict], comps: dict) -> None:
                 r[f] = c[f]
                 r["sources"][f] = c["sources"].get(f, "")
         r["company_description"] = c.get("description", "")
+        if c.get("industry_all"):
+            r["industry_all"] = c["industry_all"]

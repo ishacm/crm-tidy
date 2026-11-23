@@ -21,8 +21,9 @@ def score(r: dict, icp: dict) -> dict:
     ind, emp, geo = r.get("industry"), r.get("employees_n"), r.get("country")
     if not ind or ind == "unknown":
         unknown.append("industry")
-    elif _in(ind, icp.get("industries", [])):
-        pts += w["industry"]; reasons.append(f"+{w['industry']} industry fits ({ind})")
+    elif _in(ind, icp.get("industries", [])) or _in(r.get("industry_all", ""), icp.get("industries", [])):
+        shown = ind if _in(ind, icp.get("industries", [])) else r.get("industry_all")
+        pts += w["industry"]; reasons.append(f"+{w['industry']} industry fits ({shown})")
     else:
         reasons.append(f"+0 industry outside ICP ({ind})")
     lo, hi = (icp.get("employees") or {}).get("min") or 0, (icp.get("employees") or {}).get("max") or 10**9
