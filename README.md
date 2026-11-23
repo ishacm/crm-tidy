@@ -4,114 +4,127 @@
 ![cost](https://img.shields.io/badge/runs%20at-%E2%82%AC0-22c55e)
 ![license](https://img.shields.io/badge/license-MIT-blue)
 
-**Drop in a messy CRM export and your website. Get back a clean CRM: duplicates merged, job titles mapped to personas, company gaps filled, every record scored 0–100 against your ICP with the reasons written out, and routed to the right owner.**
+**A messy CRM in. A clean, scored one out.**
 
-*Rules first, AI only where rules can't reach. Every score explains itself.*
+crm-tidy merges duplicates, fixes names and job titles, fills in missing company data, and scores every contact from 0 to 100 against your ideal customer profile, with the reasons written out.
+
+<p align="center"><img src="docs/sweep.gif" width="700" alt="A broom sweeps across messy CRM rows; names get fixed, a duplicate is merged, a broken email is flagged, and fit scores appear"></p>
+
+**👉 [See it in action](https://ishacm.github.io/crm-tidy/)** · **[Open the demo report](https://ishacm.github.io/crm-tidy/demo/report.html)**
 
 ---
 
-## Why this exists
+## What it does, in plain words
 
-Every startup's CRM ends up the same way: the same person three times, "CFO" and "Chief Financial Officer" and "cfo" as three different things, half the companies with no industry or size, and no shared idea of who's actually a good fit. Before anyone can run a play, someone has to clean it. This does the boring 80% in a minute and shows its work.
-
-Works with HubSpot, Salesforce, Pipedrive, Attio or plain spreadsheet exports.
+1. **You give it a CRM export and your website.** It reads your website and drafts who your ideal customer is.
+2. **It tidies up.** Same person twice? Merged. "ANNA SCHMIDT"? Now "Anna Schmidt". "Sr Accountant"? A finance person. Broken email? Flagged for a human.
+3. **It tells you who to call first.** Every contact gets a fit score with the reasons, and the best ones go straight to the right owner.
 
 ## What you get
 
-| Output | What's in it |
-|---|---|
-| `clean_crm.csv` | One row per person, HubSpot-ready column names, sorted by fit score |
-| `report.html` / `.md` | Before/after completeness, duplicates merged, emails flagged, tier split, top 10 to call first |
-| `icp.yaml` | The ICP drafted from your website. **Edit it**: scores are only as good as this file |
-| `for_clay.csv` | Companies that still have gaps, ready to enrich in Clay |
+- **A clean CSV**, ready to import into HubSpot, sorted by fit.
+- **A before and after report:** how complete each field was, what got fixed, and your top 10 contacts.
+- **Your ICP as a short file** you can read and edit. The scores follow whatever you put in it.
+- **Instant scoring for new leads:** every new inbound lead is scored in under a second, with a short brief for its owner in Slack.
 
-## How it works
-
-```
-CRM export ──► map columns ──► clean ──► dedupe ──► enrich (waterfall) ──► score ──► route ──► report
-website ─────► draft ICP ────────────────────────────────────────────────────┘
-```
-
-1. **Map columns.** Recognises the usual headers in English and German (`Company Name`, `Account Name`, `Firma`...) and comma, semicolon or tab files.
-2. **Clean.** Fixes name casing, lowercases and validates emails, flags personal addresses, gets the domain from the website or work email, normalises countries to ISO codes, phones to `+49...`, and sizes like `51-200`.
-3. **Personas.** Maps job titles to a persona (finance, founder/exec, operations, technical, marketing, sales, people, procurement) and a seniority, with plain rules you can read.
-4. **Dedupe.** Merges the same person by email (any casing) or by name at the same company or domain. It keeps the most complete record, fills its gaps from the others and logs every merge.
-5. **Enrich, as a waterfall.** Each step only gets the companies that still have gaps:
-   - **website** (free): reads the homepage and classifies the industry;
-   - **Apollo** (if you add `APOLLO_API_KEY`): bulk organization enrichment, capped at 25 credits per run by default;
-   - **Clay**: export `for_clay.csv`, enrich it in a Clay table, export, then `--clay-import` it back.
-
-   Every filled field records where it came from.
-6. **Score.** Industry 30, size 25, geo 15, persona 20, seniority 10. Personal emails cost 10 points, competitors score 0, and interns are capped. Unknown fields are listed, never guessed.
-7. **Route.** Simple rules in `config.yaml` (by tier, country, round-robin), plus a Slack brief for tier-A records.
+Works with exports from HubSpot, Salesforce, Pipedrive or any spreadsheet.
 
 ## Try it in 60 seconds
 
-No API key, no account, no network:
+No account, no API key, no cost:
 
 ```bash
 git clone https://github.com/ishacm/crm-tidy && cd crm-tidy
-pip install -r requirements.txt pytest
-CRMTIDY_LLM=mock python -m crm_tidy.run --demo      # 60 messy rows from fictional companies
-CRMTIDY_LLM=mock pytest -q                          # 23 tests
+pip install -r requirements.txt
+CRMTIDY_LLM=mock python -m crm_tidy.run --demo
 ```
 
-> The demo CRM is generated by `scripts/make_demo_data.py`: fictional people at fictional `.example` companies, with deliberate mess (duplicates, shouting names, broken emails, country spellings). Mock mode swaps the AI for simple rules.
+Then open the `report.html` it prints. The demo CRM is 60 deliberately messy rows of fictional people at fictional `.example` companies.
 
-## Run it on your CRM (still €0)
+## Use it on your own CRM
 
 ```bash
-cp .env.example .env                                   # add a free Groq key; Apollo/Slack are optional
-python -m crm_tidy.run --csv export.csv --website https://your-company.com   # drafts runs/<date>/icp.yaml
-# review and edit that icp.yaml, then:
+cp .env.example .env                                          # a free Groq key; Apollo and Slack are optional
+python -m crm_tidy.run --csv export.csv --website https://your-company.com
+# open the icp.yaml it drafted, fix anything that's wrong, then:
 python -m crm_tidy.run --csv export.csv --icp icp.yaml
-python -m crm_tidy.run --csv export.csv --icp icp.yaml --clay-import clay_enriched.csv --slack
-```
-
-| Piece | Free option | Notes |
-|---|---|---|
-| AI (ICP draft, website classification) | Groq free tier | Paid providers refused unless `CRMTIDY_ALLOW_PAID=true` |
-| Company data | Apollo free plan | 1 credit per matched company. The free plan is small, so the per-run cap matters. Free accounts need a work email for enrichment. Response handling is tested against a real (trimmed) bulk_enrich response |
-| Research at scale | Clay free plan | CSV round trip works on any plan. Live webhook push (`CLAY_WEBHOOK_URL`) depends on your Clay plan |
-| Automation | n8n Community Edition | Self-hosted, free |
-
-## Automate it with n8n
-
-```bash
-cp runs/<date>-<file>/icp.yaml icp.yaml                                 # your reviewed ICP; the API refuses to score without one
-uvicorn crm_tidy.serve:app --port 8091                                  # n8n on the same machine
-CRMTIDY_API_TOKEN=pick-a-long-random-string \
-  uvicorn crm_tidy.serve:app --host 0.0.0.0 --port 8091                 # n8n in Docker: always set a token
-```
-
-Import [`n8n/crm-tidy.workflow.json`](n8n/crm-tidy.workflow.json), and paste your token into the `X-Api-Token` header of the two crm-tidy nodes. It has two flows:
-
-- **Every new lead** (from a form, HubSpot or a Clay table webhook) is cleaned and scored in under a second. Tier A gets a Slack brief for its owner, and everyone else goes to nurture.
-- **Every Monday** the full CRM export is cleaned again and a summary goes to Slack.
-
-## Safety rails 🛡️
-
-- **Explainable.** Every score lists its reasons and its unknowns, and every enriched field records its source (`crm`, `website`, `apollo`, `clay`).
-- **Never overwrites** data that's already in your CRM. Enrichment only fills gaps.
-- **Credit caps.** Apollo stops at `max_credits_per_run`, so a free plan can't be emptied by accident.
-- **No secrets in code.** Keys live in `.env` (git-ignored), and CI fails if anything key-shaped is committed.
-- **Personal data stays yours.** Nothing is sent anywhere except the enrichment providers you switch on, and website classification only sends company homepages, never people.
-
-## Before quoting any number
-
-The demo numbers come from fictional data. On a real CRM, spot-check 20 merged duplicates and 20 persona mappings by hand before trusting the totals, and keep the report's date with any number you share.
-
-## Repo map
-
-```
-crm_tidy/    ingest, clean, enrich, score, route, report, icp, serve (API for n8n)
-prompts/     ICP drafting and website classification
-fixtures/    demo ICP, fictional homepages, the messy demo CRM
-scripts/     make_demo_data.py, check_secrets.py
-n8n/         importable workflow
-tests/       23 tests, run in mock mode on every push
 ```
 
 ---
 
-<sub>MIT licensed · built by [Isha Chaudhari](https://github.com/ishacm) · part of a small set of open GTM tools, alongside [Kompass](https://github.com/ishacm/kompass) and [Earshot](https://github.com/ishacm/earshot)</sub>
+<details>
+<summary><b>How the score works</b></summary>
+
+| Points | For |
+|---|---|
+| 30 | The industry matches your ICP |
+| 25 | The company size is in your range |
+| 15 | The country is one you sell to |
+| 20 | The person's role matches (finance, founder, operations...) |
+| 10 | The seniority matches |
+
+Personal emails (like gmail) cost 10 points, competitors score 0, and students and interns are capped at 20. If something is unknown, the score says so instead of guessing. You can change all of this in `config.yaml`.
+
+</details>
+
+<details>
+<summary><b>Filling the gaps: website, Apollo and Clay</b></summary>
+
+Missing company data is filled in order, and each step only gets the companies that still have gaps:
+
+1. **The company's website** (free): the AI reads the homepage and names the industry.
+2. **Apollo** (optional, needs `APOLLO_API_KEY`): company size, industry and country, capped at 25 credits per run so a free plan can't be emptied by accident. Free Apollo accounts need a work email for this.
+3. **Clay** (optional): crm-tidy writes `for_clay.csv`, you enrich it in a Clay table, export it, and bring it back with `--clay-import clay_export.csv`.
+
+Existing CRM data is never overwritten, and every filled field records where it came from. Apollo's real response format was checked with live data, and that check is part of the tests.
+
+</details>
+
+<details>
+<summary><b>Score every new lead automatically with n8n</b></summary>
+
+```bash
+cp runs/<date>-<file>/icp.yaml icp.yaml                                   # your reviewed ICP
+uvicorn crm_tidy.serve:app --port 8091                                    # n8n on the same machine
+CRMTIDY_API_TOKEN=pick-a-long-random-string \
+  uvicorn crm_tidy.serve:app --host 0.0.0.0 --port 8091                   # n8n in Docker: always set a token
+```
+
+Import [`n8n/crm-tidy.workflow.json`](n8n/crm-tidy.workflow.json) into a self-hosted n8n (free Community Edition). Every new lead from a form, HubSpot or Clay gets scored; tier A leads get a Slack brief, everyone else goes to nurture. Every Monday, the full export is cleaned again and a summary goes to Slack.
+
+</details>
+
+<details>
+<summary><b>What it costs (nothing) and what keeps it safe</b></summary>
+
+| Piece | Free option |
+|---|---|
+| AI | Groq free tier, only used for drafting the ICP and reading company homepages. People's data never goes to the AI |
+| Company data | Apollo free plan (capped) and Clay free plan via CSV |
+| Automation | n8n Community Edition, self-hosted |
+
+- **Every score explains itself**, and every enriched field shows its source.
+- **Your data stays yours.** Real exports and your ICP are git-ignored, so they can't be committed by accident.
+- **No secrets in the code.** Keys live in `.env`, and CI fails if anything key-shaped slips in.
+- **Before you trust the totals:** spot-check 20 merges and 20 job-title mappings by hand.
+
+</details>
+
+<details>
+<summary><b>What's in the repo</b></summary>
+
+```
+crm_tidy/    ingest, clean, enrich, score, route, report, icp, serve (API for n8n)
+prompts/     ICP drafting and website reading
+fixtures/    the fictional demo CRM, homepages and ICP
+scripts/     make_demo_data.py, check_secrets.py
+n8n/         the importable workflow
+docs/        the live page, the demo report and the animation (python docs/make_gifs.py)
+tests/       23 tests, run on every push without keys or network
+```
+
+</details>
+
+---
+
+<sub>MIT licensed · built by [Isha Chaudhari](https://www.linkedin.com/in/ishachaudhari/) · one of three small open GTM tools: [Kompass](https://github.com/ishacm/kompass), [Earshot](https://ishacm.github.io/earshot/) and [crm-tidy](https://ishacm.github.io/crm-tidy/)</sub>
