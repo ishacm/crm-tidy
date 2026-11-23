@@ -1,0 +1,40 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>crm-tidy report</title><style>body{font:15px/1.6 system-ui,sans-serif;max-width:1000px;margin:40px auto;padding:0 20px;color:#1b1a18;background:#f5f1e8}h2{margin-top:36px;border-top:1px solid #dad3c5;padding-top:18px}table{border-collapse:collapse;width:100%;font-size:13px}td,th{border-bottom:1px solid #dad3c5;padding:7px;text-align:left;vertical-align:top}blockquote{border-left:3px solid #b04e1a;margin:0;padding-left:12px}pre{background:#ebe5d8;padding:12px;overflow:auto}code{background:#ebe5d8;padding:1px 4px}</style></head><body><h1>CRM cleanup and fit report: Ledgerly</h1><p><strong>Run:</strong> 2026-11-23 01:53 UTC · mode <code>mock</code> · ICP: draft: review before trusting the scores</p><blockquote><strong>Demo data.</strong> Fictional companies and people, generated for this demo. It shows the format, not findings.</blockquote><h2>At a glance</h2><ul><li><strong>60</strong> rows in → <strong>55</strong> clean records (<strong>5</strong> duplicates merged)</li><li><strong>1</strong> invalid email(s) flagged, <strong>1</strong> personal email(s) (gmail etc.) kept but scored lower</li><li><strong>11</strong> company names standardised (one spelling per company)</li><li>Tiers: <strong>A</strong> 20, <strong>B</strong> 18, <strong>C</strong> 7, <strong>D</strong> 10</li><li>Apollo credits used: <strong>0</strong> (off, no APOLLO_API_KEY)</li><li>Fields filled by enrichment: website 49</li></ul><h2>Completeness, before and after</h2><p><em>Share of records with the field filled. After = after merging duplicates and enrichment.</em></p><table><tr><th>Field</th><th>Before</th><th>After</th></tr><tr><td>first name</td><td>100%</td><td>100%</td></tr><tr><td>last name</td><td>100%</td><td>100%</td></tr><tr><td>email</td><td>98%</td><td>100%</td></tr><tr><td>title</td><td>92%</td><td>93%</td></tr><tr><td>company</td><td>97%</td><td>96%</td></tr><tr><td>domain</td><td>95%</td><td>96%</td></tr><tr><td>country</td><td>98%</td><td>100%</td></tr><tr><td>phone</td><td>47%</td><td>45%</td></tr><tr><td>company size</td><td>72%</td><td>96%</td></tr><tr><td>industry</td><td>2%</td><td>96%</td></tr><tr><td>persona (from title)</td><td>78%</td><td>80%</td></tr></table><h2>Call these first</h2><table><tr><th>Score</th><th>Tier</th><th>Person</th><th>Company</th><th>Why</th><th>Owner</th></tr><tr><td>100</td><td>A</td><td>Ben Taylor, Head of Finance</td><td>Nordlicht Commerce</td><td>+30 industry fits (e-commerce); +25 size fits (65 employees); +15 country fits (DE); +20 persona fits (finance); +10 seniority fits (vp_director)</td><td>AE EMEA</td></tr><tr><td>100</td><td>A</td><td>James Okafor, COO</td><td>Tulip Data B.V.</td><td>+30 industry fits (software); +25 size fits (90 employees); +15 country fits (NL); +20 persona fits (operations); +10 seniority fits (c_level)</td><td>AE EMEA</td></tr><tr><td>100</td><td>A</td><td>Arjun Mehta, COO</td><td>Harbor Freight Labs Inc</td><td>+30 industry fits (software); +25 size fits (215 employees); +15 country fits (US); +20 persona fits (operations); +10 seniority fits (c_level)</td><td>AE North America</td></tr><tr><td>100</td><td>A</td><td>Lucas Martin, Senior Accountant</td><td>Orbit Devtools</td><td>+30 industry fits (software); +25 size fits (60 employees); +15 country fits (US); +20 persona fits (finance); +10 seniority fits (manager)</td><td>AE North America</td></tr><tr><td>100</td><td>A</td><td>Lucas Martin, Head of Operations</td><td>Vela Security</td><td>+30 industry fits (Computer &amp; Network Security); +25 size fits (110 employees); +15 country fits (NL); +20 persona fits (operations); +10 seniority fits (vp_director)</td><td>AE EMEA</td></tr><tr><td>100</td><td>A</td><td>Sara Kim, Head of Finance</td><td>Vela Security</td><td>+30 industry fits (Computer &amp; Network Security); +25 size fits (175 employees); +15 country fits (NL); +20 persona fits (finance); +10 seniority fits (vp_director)</td><td>AE EMEA</td></tr><tr><td>100</td><td>A</td><td>Mia Hoffmann, Head of Operations</td><td>Canal Street Studio</td><td>+30 industry fits (agency); +25 size fits (28 employees); +15 country fits (GB); +20 persona fits (operations); +10 seniority fits (vp_director)</td><td>AE EMEA</td></tr><tr><td>100</td><td>A</td><td>Priya Nair, Founder &amp; CEO</td><td>Riverbend Agency</td><td>+30 industry fits (agency); +25 size fits (22 employees); +15 country fits (IE); +20 persona fits (founder_exec); +10 seniority fits (c_level)</td><td>AE EMEA</td></tr><tr><td>100</td><td>A</td><td>Hannah Lee, COO</td><td>Quarry Analytics SAS</td><td>+30 industry fits (software); +25 size fits (65 employees); +15 country fits (FR); +20 persona fits (operations); +10 seniority fits (c_level)</td><td>AE EMEA</td></tr><tr><td>100</td><td>A</td><td>Ben Taylor, Office Manager</td><td>Canal Street Studio</td><td>+30 industry fits (agency); +25 size fits (28 employees); +15 country fits (GB); +20 persona fits (operations); +10 seniority fits (manager)</td><td>AE EMEA</td></tr></table><h2>Duplicates merged</h2><table><tr><th>Kept row</th><th>Merged rows</th><th>Why</th></tr><tr><td>9</td><td>29</td><td>same email</td></tr><tr><td>19</td><td>50</td><td>same email</td></tr><tr><td>51</td><td>23</td><td>same email</td></tr><tr><td>31</td><td>41</td><td>same email</td></tr><tr><td>48</td><td>40</td><td>same name and company</td></tr></table><h2>Needs a human</h2><table><tr><th>Row</th><th>Issue</th></tr><tr><td>17</td><td>invalid email, no company or domain</td></tr><tr><td>18</td><td>no company or domain</td></tr></table><h2>The ICP used</h2><pre>company: Ledgerly
+sells: expense management for small teams
+industries:
+- software
+- saas
+- e-commerce
+- agency
+- marketing
+- analytics
+- security
+- health
+- payroll
+employees:
+  min: 20
+  max: 250
+geos:
+- US
+- CA
+- GB
+- IE
+- DE
+- NL
+- FR
+personas:
+- finance
+- founder_exec
+- operations
+seniority:
+- c_level
+- vp_director
+- manager
+disqualifiers:
+- fewer than 20 employees
+- competitors
+- students
+competitor_domains:
+- northbook.example
+source_url: https://ledgerly.example
+status: &#x27;draft: review before trusting the scores&#x27;
+</pre><p><em>Scores are only as good as the ICP: review <code>icp.yaml</code> before acting on them. Website classification is a model&#x27;s reading of a homepage and is marked as such per field.</em></p></body></html>

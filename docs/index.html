@@ -1,0 +1,51 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>crm-tidy: A messy CRM in. A clean, scored one out.</title><meta name="description" content="crm-tidy merges duplicates, fixes names and job titles, fills missing company data, and scores every contact 0 to 100 against your ideal customer profile, with the reasons written out.">
+<meta property="og:title" content="crm-tidy: A messy CRM in. A clean, scored one out."><meta property="og:description" content="crm-tidy merges duplicates, fixes names and job titles, fills missing company data, and scores every contact 0 to 100 against your ideal customer profile, with the reasons written out.">
+<link rel="preload" as="image" href="sweep.webp"><style>:root{--bg:#f6f2ea;--ink:#1b1a18;--soft:#3d3b37;--muted:#6b675f;--line:#ddd6c8;--card:#fffdf8;--accent:#b04e1a;--code:#efe9dd}
+@media (prefers-color-scheme:dark){:root{--bg:#0c0d0e;--ink:#ece7dd;--soft:#c8c2b7;--muted:#9c978e;--line:#2a2d30;--card:#141618;--accent:#f08a4b;--code:#181a1c}}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+a{color:var(--accent);text-underline-offset:3px}a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.wrap{max-width:860px;margin:0 auto;padding:0 22px}
+header{display:flex;align-items:center;gap:12px;padding:22px 0}
+header b{font-weight:600}header nav{margin-left:auto;display:flex;gap:18px;font-size:15px}header nav a{color:var(--soft);text-decoration:none}
+.k{font:13px/1.6 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted)}
+h1{font-size:clamp(30px,5.4vw,48px);line-height:1.1;letter-spacing:-.025em;font-weight:600;margin:28px 0 14px;max-width:760px}
+.sub{font-size:clamp(17px,2vw,19px);color:var(--soft);max-width:640px;margin:0}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin:28px 0 34px}
+.btn{display:inline-flex;align-items:center;min-height:46px;padding:0 20px;border-radius:10px;font-weight:600;text-decoration:none;border:1px solid var(--line);color:var(--ink)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+@media (prefers-color-scheme:dark){.btn.primary{color:#1a0d05}}
+figure{margin:0 0 10px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#0c0d0e}
+figure img{display:block;width:100%;height:auto}
+section{padding:40px 0;border-top:1px solid var(--line)}
+h2{font-size:clamp(22px,3vw,28px);letter-spacing:-.015em;font-weight:600;margin:6px 0 16px}
+ol.steps{list-style:none;padding:0;margin:0;counter-reset:s}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:38px 1fr;gap:6px;padding:12px 0;border-bottom:1px solid var(--line)}
+ol.steps li::before{content:counter(s,decimal-leading-zero);font:13px/2 ui-monospace,Menlo,monospace;color:var(--accent)}
+ol.steps b{display:block}ol.steps span{color:var(--soft)}
+ul.gets{padding-left:20px;margin:0}ul.gets li{margin:0 0 8px;color:var(--soft)}
+.note{border-left:3px solid var(--accent);padding:2px 0 2px 14px;color:var(--soft);margin:18px 0 0}
+pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:16px 18px;overflow-x:auto;font:14px/1.7 ui-monospace,SFMono-Regular,Menlo,monospace;margin:0;position:relative}
+.copy{position:absolute;top:10px;right:10px;font:12px ui-monospace,monospace;background:var(--card);color:var(--soft);border:1px solid var(--line);border-radius:6px;padding:4px 8px;cursor:pointer}
+table{width:100%;border-collapse:collapse;font-size:15px}td,th{text-align:left;padding:10px 12px 10px 0;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted);font-weight:500}
+footer{padding:36px 0 56px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}</style></head><body>
+<div class="wrap">
+<header><a href="https://github.com/ishacm" style="display:inline-flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none"><svg width="22" height="14" viewBox="0 0 22 14" aria-hidden="true"><rect x="9" y="4" width="3" height="3" fill="#F08A4B"/><rect x="12" y="4" width="3" height="3" fill="#F08A4B"/><rect x="15" y="5" width="3" height="3" fill="#F08A4B"/><rect x="9" y="7" width="3" height="3" fill="currentColor" opacity=".8"/><rect x="12" y="7" width="3" height="3" fill="currentColor" opacity=".8"/><rect x="5" y="2" width="3" height="3" fill="currentColor" opacity=".5"/><rect x="5" y="9" width="3" height="3" fill="currentColor" opacity=".5"/><rect x="1" y="0" width="3" height="3" fill="currentColor" opacity=".35"/><rect x="1" y="11" width="3" height="3" fill="currentColor" opacity=".35"/></svg><b>crm-tidy</b></a>
+<nav><a href="demo/report.html">demo report</a><a href="https://github.com/ishacm/crm-tidy">GitHub</a></nav></header>
+<p class="k">open source · revops · runs at €0</p>
+<h1>A messy CRM in. A clean, scored one out.</h1>
+<p class="sub">crm-tidy merges duplicates, fixes names and job titles, fills missing company data, and scores every contact 0 to 100 against your ideal customer profile, with the reasons written out.</p>
+<div class="cta"><a class="btn primary" href="demo/report.html">See a demo report →</a><a class="btn" href="https://github.com/ishacm/crm-tidy">View the code</a></div>
+<figure><img src="sweep.webp" width="760" height="360" alt="A broom sweeps across messy CRM rows; names get fixed, a duplicate is merged, a broken email is flagged, and fit scores appear" fetchpriority="high"></figure>
+<p class="k">shouting names, duplicates and broken emails in. tidy rows with fit scores out.</p>
+<section><p class="k">how it works</p><h2>What happens to your export</h2><ol class="steps"><li><div><b>Read any export</b><span>HubSpot, Salesforce, Pipedrive or a spreadsheet, with English or German column names.</span></div></li><li><div><b>Clean it up</b><span>Fixes name casing, checks emails, standardises countries, phone numbers and company names, and maps job titles to personas like finance or founder.</span></div></li><li><div><b>Merge duplicates</b><span>The same person with a different email casing, or listed twice at the same company, becomes one record. Every merge is logged.</span></div></li><li><div><b>Fill the gaps</b><span>A free check of each company&#x27;s website first, then Apollo (capped so a free plan can&#x27;t be emptied by accident), then Clay through a simple CSV round trip.</span></div></li><li><div><b>Score and route</b><span>Each record gets a 0 to 100 fit score against your ICP, with reasons, and the best ones go to the right owner in Slack.</span></div></li></ol></section>
+<section><p class="k">what you get</p><h2>A CRM your team can actually use</h2><ul class="gets"><li>A clean CSV, ready to import into HubSpot, sorted by fit</li><li>A before and after report: how complete each field was, and what got fixed</li><li>An ICP drafted from your website, as a short file you review and edit</li><li>Every new inbound lead scored in under a second, with a short brief for its owner</li></ul><p class="note">The demo uses fictional people at fictional .example companies. Real Apollo responses were checked against the code, and that check is now part of the tests.</p></section>
+<section><p class="k">try it in 60 seconds</p><h2>No account, no API key, no cost</h2>
+<pre><button class="copy" type="button" onclick="navigator.clipboard&&navigator.clipboard.writeText(this.parentNode.innerText.replace(/^copy\n?/,''));this.textContent='copied'">copy</button>git clone https://github.com/ishacm/crm-tidy &amp;&amp; cd crm-tidy
+pip install -r requirements.txt
+CRMTIDY_LLM=mock python -m crm_tidy.run --demo</pre>
+<p class="sub" style="font-size:16px;margin-top:14px">Then open the report it prints. To run it on a real company, add a free Groq key: <a href="https://github.com/ishacm/crm-tidy#readme">see the README</a>.</p></section>
+<section><p class="k">what it costs</p><h2>€0, on purpose</h2><table><tbody><tr><td>AI</td><td>Groq free tier, only for drafting the ICP and reading company websites. People&#x27;s data never goes to the AI.</td></tr><tr><td>Company data</td><td>Apollo free plan (optional, credit-capped) and Clay free plan via CSV</td></tr><tr><td>Automation</td><td>n8n Community Edition, self-hosted</td></tr></tbody></table></section>
+<footer>Built by <a href="https://www.linkedin.com/in/ishachaudhari/">Isha Chaudhari</a> · MIT licensed · one of three small open GTM tools: <a href="https://github.com/ishacm/kompass">Kompass</a>, <a href="https://ishacm.github.io/earshot/">Earshot</a>, <a href="https://ishacm.github.io/crm-tidy/">crm-tidy</a></footer>
+</div></body></html>
