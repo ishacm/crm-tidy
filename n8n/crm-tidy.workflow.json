@@ -1,0 +1,257 @@
+{
+  "name": "crm-tidy: score and route every new lead",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "new-lead",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "name": "Webhook: new lead (form, HubSpot, Clay)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "crm-tidy-lead"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8091/score",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ lead: $json.body ?? $json, icp_path: 'icp.yaml' }) }}",
+        "options": {
+          "timeout": 30000
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Api-Token",
+              "value": "PASTE_THE_SAME_TOKEN_AS_IN_YOUR_.env"
+            }
+          ]
+        }
+      },
+      "name": "Clean + score (crm-tidy)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "c1",
+              "leftValue": "={{ $json.tier }}",
+              "rightValue": "A",
+              "operator": {
+                "type": "string",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "name": "Tier A?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [
+        480,
+        0
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "PASTE_YOUR_SLACK_INCOMING_WEBHOOK_URL",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ text: ':dart: New tier-A lead\\n' + $json.brief }) }}",
+        "options": {}
+      },
+      "name": "Brief the owner in Slack",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        720,
+        -100
+      ],
+      "notes": "Replace the URL with your Slack incoming webhook.",
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "n1",
+              "name": "action",
+              "value": "=nurture (tier {{ $json.tier }}, score {{ $json.fit_score }})",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Everyone else: nurture",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        720,
+        100
+      ]
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [
+                1
+              ],
+              "triggerAtHour": 6
+            }
+          ]
+        }
+      },
+      "name": "Every Monday 06:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://host.docker.internal:8091/run",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ csv_path: 'exports/crm_export.csv', icp_path: 'icp.yaml' }) }}",
+        "options": {
+          "timeout": 600000
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-Api-Token",
+              "value": "PASTE_THE_SAME_TOKEN_AS_IN_YOUR_.env"
+            }
+          ]
+        }
+      },
+      "name": "Clean the weekly CRM export",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        240,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "PASTE_YOUR_SLACK_INCOMING_WEBHOOK_URL",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ text: 'CRM cleanup: ' + $json.summary.rows_in + ' rows -> ' + $json.summary.records_out + ' records, ' + $json.summary.duplicates_merged + ' duplicates merged. Tiers: ' + JSON.stringify($json.summary.tiers) }) }}",
+        "options": {}
+      },
+      "name": "Weekly summary to Slack",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        480,
+        300
+      ],
+      "continueOnFail": true
+    }
+  ],
+  "connections": {
+    "Webhook: new lead (form, HubSpot, Clay)": {
+      "main": [
+        [
+          {
+            "node": "Clean + score (crm-tidy)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean + score (crm-tidy)": {
+      "main": [
+        [
+          {
+            "node": "Tier A?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tier A?": {
+      "main": [
+        [
+          {
+            "node": "Brief the owner in Slack",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Everyone else: nurture",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Every Monday 06:00": {
+      "main": [
+        [
+          {
+            "node": "Clean the weekly CRM export",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean the weekly CRM export": {
+      "main": [
+        [
+          {
+            "node": "Weekly summary to Slack",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "pinData": {}
+}

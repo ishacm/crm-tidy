@@ -1,0 +1,11 @@
+company: Ledgerly
+sells: expense management for small teams
+industries: [software, saas, e-commerce, agency, marketing, analytics, security, health, payroll]
+employees: {min: 20, max: 250}
+geos: [US, CA, GB, IE, DE, NL, FR]
+personas: [finance, founder_exec, operations]
+seniority: [c_level, vp_director, manager]
+disqualifiers: [fewer than 20 employees, competitors, students]
+competitor_domains: [northbook.example]
+source_url: https://ledgerly.example
+status: reviewed (demo)

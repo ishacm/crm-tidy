@@ -1,0 +1,29 @@
+llm:
+  provider: groq          # free mode. CRMTIDY_LLM=mock for tests/demo
+  providers:
+    groq: {kind: openai_compatible, base_url: "https://api.groq.com/openai/v1", key_env: GROQ_API_KEY,
+           model: openai/gpt-oss-120b, extra: {reasoning_effort: low}, min_max_tokens: 2048}
+    anthropic: {kind: anthropic, paid: true, key_env: ANTHROPIC_API_KEY, model: claude-sonnet-5-5}
+    ollama: {kind: openai_compatible, base_url: "http://localhost:11434/v1", key_env: null, model: null}
+
+enrich:
+  order: [website, apollo, clay]   # waterfall: each provider only fills what is still missing
+  website: {enabled: true, max_companies: 100}
+  apollo:
+    enabled: true                  # used only when APOLLO_API_KEY is set
+    max_credits_per_run: 25        # hard cap. Free plan = 75 credits/month. 1 credit per company.
+  clay:
+    enabled: true                  # CSV round trip works on every plan; webhook push needs CLAY_WEBHOOK_URL
+
+score:
+  weights: {industry: 30, size: 25, geo: 15, persona: 20, seniority: 10}
+  tiers: {A: 75, B: 55, C: 35}     # below C = D
+  penalties: {free_email: 10, unknown_company: 10}
+
+route:
+  # first matching rule wins; "round_robin" spreads records over owners
+  rules:
+    - {when: {tier: A, geo: [US, CA]}, owner: "AE North America"}
+    - {when: {tier: A}, owner: "AE EMEA"}
+    - {when: {tier: B}, round_robin: ["SDR 1", "SDR 2"]}
+    - {when: {}, owner: "Nurture"}
